@@ -39,4 +39,3 @@ printf("Unsigned hexadecimal:[%x, %X]\n", ui, ui);
 
 return (0);
 }
-
