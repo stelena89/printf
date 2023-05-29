@@ -3,24 +3,53 @@
  * convertToString - converts number and base into string
  * @num: input number
  * @base: input base
- * @lowercase: flag if hexa values need to be lowercase
+ * @flags: flags
+ * @params: flags struct
  * Return: result string
  */
-char *convertToString(unsigned long int num, int base, int lowercase)
+char *convertToString(long int num, int base, int flags, flags_t *flg)
 {
-	static char *rep;
-	static char buffer[50];
-	char *ptr;
+    static char *array;
+    static char buffer[50];
+    char sign = 0;
+    char *ptr;
+    unsigned long n = num;
+    (void)flg;
 
-	rep = (lowercase)
-		? "0123456789abcdef"
-		: "0123456789ABCDEF";
-	ptr = &buffer[49];
-	*ptr = '\0';
-	do {
-		*--ptr = rep[num % base];
-		num /= base;
-	} while (num != 0);
+    if (!(flags & UNSIGNED) && num < 0)
+    {
+        n = -num;
+        sign = '-';
+    }
+    array = flags & LOWERCASE ? "0123456789abcdef" : "0123456789ABCDEF";
+    ptr = &buffer[49];
+    *ptr = '\0';
 
-	return (ptr);
+    do	{
+        *--ptr = array[n % base];
+        n /= base;
+    } while (n != 0);
+
+    if (sign)
+        *--ptr = sign;
+    return (ptr);
+}
+/**
+ * print_range - function that prints a range of char addresses
+ * @from: starting address
+ * @to: stopping address
+ * @except: except address
+ * Return: number bytes printed
+ */
+int print_range(char *from, char *to, char *except)
+{
+    int sum = 0;
+
+    while (from <= to)
+    {
+        if (from != except)
+            sum += _putchar(*from);
+        from++;
+    }
+    return (sum);
 }

@@ -8,6 +8,9 @@
 #include <stdlib.h>
 
 #define BUFFER 1024
+#define LOWERCASE	1
+#define UNSIGNED	2
+#define NULL_STR "(null)"
 
 /**
  * struct flags - struct containing flags to enable
@@ -15,52 +18,59 @@
  * @plus: flag for the '+' character
  * @space: flag for the ' ' character
  * @hash: flag for the '#' character
+ * @zero: flag for the '0' character
+ * @minus: flag for the '-' character
+ * @width:  width
+ * @precision:  precision
+ * @h_mod: h modifier
+ * @l_mod: l modifier
  */
 typedef struct flags
 {
-	int plus;
-	int space;
-	int hash;
+    unsigned int unsign     : 1;
+    unsigned int plus       : 1;
+    unsigned int space      : 1;
+    unsigned int hash       : 1;
+    unsigned int zero       : 1;
+    unsigned int minus      : 1;
+    unsigned int width      : 1;
+    unsigned int precision  : 1;
+    unsigned int h_mod      : 1;
+    unsigned int l_mod      : 1;
 } flags_t;
 
 /**
  * struct printSelector - to select the appropriate printing function based
  * on the format specifier passed to _printf()
- * @c: format specifier
+ * @spec: format specifier
  * @f: pointer to the printing function
  */
 typedef struct printSelector
 {
-	char c;
-	int (*f)(va_list ap, flags_t *f);
+	char *spec;
+	int (*f)(va_list ap, flags_t *);
 } printselector;
 
 
-/* selectPrintingFunction, selects the appropriate printing function
- * depending on the conversion specifier
-*/
-int (*selectPrintingFunction(char s))(va_list, flags_t *);
+int (*selectPrintingFunction(char *s))(va_list, flags_t *);
 
-/* selectflag, enable flags if _printf finds
-* a flag modifier in the format string 
-*/
-int selectflag(char s, flags_t *f);
+int select_flag(char *s, flags_t *f);
 
-/* _printf Function */
+
 int _printf(const char *format, ...);
 
-/* write_functions */
+
 int _putchar(char c);
 int _puts(char *str);
 
-/* print_functions */
-int print_string(va_list l, flags_t *f); /* %s */
-int print_char(va_list l, flags_t *f);   /* %c */
-int print_percent(va_list l, flags_t *f);  /* %% */
-int print_int(va_list l, flags_t *f); /* %d %i */
-void print_number (int n);
-int count_digit(int i);
-char *convertToString(unsigned long int num, int base, int lowercase);
+int print_string(va_list l, flags_t *f);
+int print_char(va_list l, flags_t *f);
+int print_percent(va_list l, flags_t *f);
+int print_int(va_list l, flags_t *f);
+int print_number(char *str, flags_t *flags);
+int right_shift(char *str, flags_t *flags);
+int left_shift(char *str, flags_t *flags);
+char *convertToString(long int num, int base, int flags, flags_t *params);
 
 int print_unsigned(va_list l, flags_t *f);
 int print_octal(va_list l, flags_t *f);
@@ -70,8 +80,15 @@ int print_binary(va_list l, flags_t *f);
 int print_capitalS(va_list l, flags_t *f);  
 int print_address(va_list l, flags_t *f);
 int print_reverse(va_list l, flags_t *f);
-int print_rot13(va_list l, flags_t *f); 
+int print_rot13(va_list l, flags_t *f);
 
-
+int _isdigit(int c);
+void init_flags(flags_t *flags, va_list l);
+int get_func(char *s, va_list l, flags_t *flags);
+int get_modifier(char *s, flags_t *flags);
+char *get_width(char *s, flags_t *flags, va_list l);
+char *get_precision(char *s, flags_t *flags, va_list l);
+int print_range(char *from, char *to, char *except);
+int _strlen(char *s);
 
 #endif /* MAIN_H */

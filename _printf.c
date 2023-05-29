@@ -9,39 +9,44 @@
  * Return: length of the formatted output string
  */
 int _printf(const char *format, ...)
+
 {
-	int (*pfunc)(va_list, flags_t *);
-	const char *p;
-	va_list arguments;
-	flags_t flags = {0, 0, 0};
+    int sum = 0;
+    va_list list;
+    char *p, *start;
 
-	register int count = 0;
+    flags_t params = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    va_start(list, format);
 
-	va_start(arguments, format);
-	if (!format || (format[0] == '%' && !format[1]))
-		return (-1);
-	if (format[0] == '%' && format[1] == ' ' && !format[2])
-		return (-1);
-	for (p = format; *p; p++)
-	{
-		if (*p == '%')
-		{
-			p++;
-			if (*p == '%')
-			{
-				count += _putchar('%');
-				continue;
-			}
-			while (selectflag(*p, &flags))
-				p++;
-			pfunc = selectPrintingFunction(*p);
-			count += (pfunc)
-				? pfunc(arguments, &flags)
-				: _printf("%%%c", *p);
-		} else
-			count += _putchar(*p);
-	}
-	_putchar(-1);
-	va_end(arguments);
-	return (count);
+    if (!format || (format[0] == '%' && !format[1]))/* checking for NULL char */
+        return (-1);
+    if (format[0] == '%' && format[1] == ' ' && !format[2])
+        return (-1);
+    for (p = (char *)format; *p; p++)
+    {
+        init_flags(&params, list);
+        if (*p != '%')/*checking for the % specifier*/
+        {
+            sum += _putchar(*p);
+            continue;
+        }
+        start = p;
+        p++;
+        while (select_flag(p, &params)) /* while char at p is flag character */
+        {
+            p++; /* next character */
+        }
+        p = get_width(p, &params, list);
+        p = get_precision(p, &params, list);
+        if (get_modifier(p, &params))
+            p++;
+        if (!selectPrintingFunction(p))
+            sum += print_range(start, p,
+                                 params.l_mod || params.h_mod ? p - 1 : 0);
+        else
+            sum += get_func(p, list, &params);
+    }
+    _putchar(-1);
+    va_end(list);
+    return (sum);
 }

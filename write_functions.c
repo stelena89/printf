@@ -11,20 +11,17 @@
  */
 int _putchar(char c)
 {
-	static char buf[BUFFER];
-	static int i;
+    static int i;
+    static char buf[BUFFER];
 
-	if (c == -1 || i >= BUFFER)
-	{
-		write(1, &buf, i);
-		i = 0;
-	}
-	if (c != -1)
-	{
-		buf[i] = c;
-		i++;
-	}
-	return (1);
+    if (c == -1 || i >= BUFFER)
+    {
+        write(1, buf, i);
+        i = 0;
+    }
+    if (c != -1)
+        buf[i++] = c;
+    return (1);
 }
 
 /**
@@ -34,10 +31,10 @@ int _putchar(char c)
  */
 int _puts(char *str)
 {
-	int i;
+    char *a = str;
 
-	for (i = 0; str[i] != '\0'; i++)
-		_putchar(str[i]);
-	return (i);
+    while (*str)
+        _putchar(*str++);
+    return (str - a);
 }
 

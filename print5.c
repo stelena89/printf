@@ -8,20 +8,19 @@
  */
 int print_reverse(va_list l, flags_t *f)
 {
-	int i = 0, j;
-	char *s = va_arg(l, char *);
+    int len, sum = 0;
+    char *str = va_arg(l, char *);
+    (void)f;
 
-	(void)f;
-	if (!s)
-		s = "(null)";
-
-	while (s[i])
-		i++;
-
-	for (j = i - 1; j >= 0; j--)
-		_putchar(s[j]);
-
-	return (i);
+    if (str)
+    {
+        for (len = 0; *str; str++)
+            len++;
+        str--;
+        for (; len > 0; len--, str--)
+            sum += _putchar(*str);
+    }
+    return (sum);
 }
 
 /**
@@ -33,25 +32,26 @@ int print_reverse(va_list l, flags_t *f)
  */
 int print_rot13(va_list l, flags_t *f)
 {
-	int i, j;
-	char rot13[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	char ROT13[] = "nopqrstuvwxyzabcdefghijklmNOPQRSTUVWXYZABCDEFGHIJKLM";
-	char *s = va_arg(l, char *);
+    int i, index;
+    int count = 0;
+    char arr[] =
+            "NOPQRSTUVWXYZABCDEFGHIJKLM      nopqrstuvwxyzabcdefghijklm";
+    char *a = va_arg(l, char *);
+    (void)f;
 
-	(void)f;
-	for (j = 0; s[j]; j++)
-	{
-		if (s[j] < 'A' || (s[j] > 'Z' && s[j] < 'a') || s[j] > 'z')
-			_putchar(s[j]);
-		else
-		{
-			for (i = 0; i <= 52; i++)
-			{
-				if (s[j] == rot13[i])
-					_putchar(ROT13[i]);
-			}
-		}
-	}
-
-	return (j);
+    i = 0;
+    index = 0;
+    while (a[i])
+    {
+        if ((a[i] >= 'A' && a[i] <= 'Z')
+            || (a[i] >= 'a' && a[i] <= 'z'))
+        {
+            index = a[i] - 65;
+            count += _putchar(arr[index]);
+        }
+        else
+            count += _putchar(a[i]);
+        i++;
+    }
+    return (count);
 }
